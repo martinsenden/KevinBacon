@@ -1,4 +1,4 @@
-package hogrebetyg;
+package alda.graph;
 
 import java.io.*;
 
@@ -7,21 +7,21 @@ import java.io.*;
  * tillräckligt bra, så rapportera alla buggar ni hittar. Den har antagligen
  * problem med namn som börjar med konstiga tecken. Plocka bort dessa från
  * filen. De brukar ligga först.
- * 
+ *
  * Användning:
  * <ul>
  * <li>Skapa en instans av BaconReader och skicka med sökvägen till filen ni
  * vill läsa in.
  * <li>Anropa metoden getNextPart tills ni har fått in allt ni vill ha in, ni
- * tröttnar, eller den returerar null. Det sistnämnda betyder att filen är slut.
+ * tröttnar, eller den returerar null. Det sistnämnda betyder att filen är sl ut.
  * <li>Anropa close för att stänga filen när allt ni vill läsa in är klart.
  * </ul>
- * 
+ *
  * Tips: jobba inte med de fulla filerna när ni testar. Det är drygt 16 miljoner
  * rader i de bägge filerna actors.list och actresses.list. Kommandona (linux
  * edyl) head och tail kan vara till nytta för att skapa mer hanterliga
  * datamängder att testa med.
- * 
+ *
  * @author henrikbe
  */
 public class BaconReader {
@@ -89,20 +89,20 @@ public class BaconReader {
 	public Part getNextPart() throws IOException {
 		ignoreWhiteSpace();
 		switch (currentChar) {
-		case -1:
-			return null;
-		case '(':
-			return yearOrExtraInfo();
-		case '"':
-			return tvTitle();
-		case '<':
-			return billingPosition();
-		case '[':
-			return characterName();
-		case '{':
-			return showId();
-		default:
-			return nameOrTitle();
+			case -1:
+				return null;
+			case '(':
+				return yearOrExtraInfo();
+			case '"':
+				return tvTitle();
+			case '<':
+				return billingPosition();
+			case '[':
+				return characterName();
+			case '{':
+				return showId();
+			default:
+				return nameOrTitle();
 		}
 	}
 
