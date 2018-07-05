@@ -5,33 +5,39 @@ import java.util.Set;
 
 public class UndirectedGraphNode<E> {
         private E data;
-        private Set<String> credits; //Kan tas bort efter uppbyggnad, pga behöver bara bacon-nummer
+        private HashSet<String> credits;
         private Set<UndirectedGraphNode<E>> connectedNodes;
+
 
         public UndirectedGraphNode(E data) {
             this.data = data;
             credits = new HashSet<>();
             connectedNodes = new HashSet<>();
+
         }
 
         public boolean isConnected(UndirectedGraphNode<E> otherNode){
             return connectedNodes.contains(otherNode);
         }
 
-        public void connectNode(UndirectedGraphNode<E> otherNode){
-            connectedNodes.add(otherNode);
+        public boolean connectNode(UndirectedGraphNode<E> otherNode){
+            return connectedNodes.add(otherNode); //Lägger till den andra skådespelaren i vår skådespelares kopplade noder
         }
 
-        public boolean addCredits(String production){
-            if (credits.contains(production)){
-                return false;
-            }
-            credits.add(production);
-            return true;
+        public boolean addCredit(String production){
+            return credits.add(production); //Kommer från graphens addCredit
         }
 
-        public Set<String> getCredits(){
+        public HashSet<String> getCredits(){
             return credits;
+        }
+
+        public E getData(){
+            return data;
+        }
+
+        public Set<UndirectedGraphNode<E>> getConnectedNodes(){
+            return connectedNodes;
         }
 
 

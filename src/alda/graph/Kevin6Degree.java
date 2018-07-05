@@ -1,76 +1,110 @@
 package alda.graph;
 
-
-import java.io.IOException;
-import java.util.*;
+import java.util.Scanner;
 
 public class Kevin6Degree {
+    private MyUndirectedGraph<String> graph = new MyUndirectedGraph<>();
+    private GraphBuilder gb = new GraphBuilder();
 
     public static void main(String[] args) {
-        try {
-            HashMap<String, HashSet<String>> creditMap = new HashMap<>();
-            BaconReader br = new BaconReader("/Users/martinsenden/Desktop/Programmering/ALDA/KevinBacon/src/alda/graph/actressesTest.list");
-            BaconReader.Part pr = br.getNextPart();
-            String tempAct = "";
-            Boolean title = false;
-            //Boolean year = false;
-            String key = "";
+        Kevin6Degree k6d = new Kevin6Degree();
+        k6d.go();
+    }
 
-            while(pr != null){
+    private void go() {
+        System.out.println("Kevin Bacon Program");
+        System.out.println(" -----Loading----- ");
 
-                System.out.println("-------------------");
+        gb.buildGraph(graph); //Bygger graph
+        gb = new GraphBuilder();                //Friar upp minne genom att sätta om referensen. Tar bort creditMap,
+        // pga behöver bara för uppbyggning
+        System.out.println(graph);              //Skriver ut antal noder och bågar
+        menu();
+    }
 
-                if(pr.type.toString().equals("NAME")){
-                    tempAct = pr.text.toString();
-                    System.out.println(pr.type.toString());
+    private void menu() {
+        boolean run = true;
+        Scanner in = new Scanner(System.in);
+        while (run) {
+            System.out.println("Commands: ");
+            System.out.println("N - Give an actors name and find its' Bacon-number");
+            System.out.println("T - Give two actors names to find the Bacon-number between the two");
+            System.out.println("X - Exit the program");
+            System.out.println("Enter a command: ");
 
-                    pr = br.getNextPart();
+            switch (in.nextLine().toLowerCase()) {
 
-                }
-                if(pr.type.toString().equals("TITLE")) {
-                    key = key + pr.text.toString();
-                    title = true;
-                    System.out.println(pr.type.toString());
-                    pr = br.getNextPart();
-                }
+                case "t":
+                    System.out.println("Please enter the first actor's last name: ");
+                    String lastNameOne = normalizeName(in.nextLine());
+                    System.out.println("Please enter first actor's first name: ");
+                    String firstNameOne = normalizeName(in.nextLine());
+                    String actorNameOne = lastNameOne + ", " + firstNameOne;
+                    System.out.println("Please enter the second actor's last name: ");
+                    String lastNameTwo = normalizeName(in.nextLine());
+                    System.out.println("Please enter the second actor's first name: ");
+                    String firstNameTwo = normalizeName(in.nextLine());
+                    String actorNameTwo = lastNameTwo + ", " + firstNameTwo;
+                    findKevinBaconNumberBetweenTwo(actorNameOne, actorNameTwo);
+                    break;
 
-                if(pr.type.toString().equals("YEAR") || pr.text.equals("????")) {
-                    key = key + pr.text.toString();
-                    pr = br.getNextPart();
-                }
-                if(pr.type.toString().equals("ID")) {
-                    key = key + pr.text.toString();
-                    pr = br.getNextPart();
-                }
-                if(pr.type.toString().equals("INFO")) {
-                    //System.out.println(pr.type.toString());
-                    System.out.println("Info-text: " + pr.text);
-                    pr = br.getNextPart();
-                }
+                case "n":
+                    System.out.println("Please enter actor's last name: ");
+                    String lastName = normalizeName(in.nextLine());
 
-                if(creditMap.containsKey(key) && title){
-                    creditMap.get(key).add(tempAct);
-                    System.out.println(key + " | " + tempAct + "  dcontains");
-                    key = "";
-                    title = false;
-                    //year = false;
+                    System.out.println("Please enter actor's first name: ");
+                    String firstName = normalizeName(in.nextLine());
 
-                }else if(!creditMap.containsKey(key) && title){
-                    HashSet creditSet = new HashSet();
-                    System.out.println(key + " | " + tempAct + " !contains");
-                    creditSet.add(tempAct);
-                    creditMap.put(key, creditSet);
-                    title = false;
-                    //year = false;
-                    key = "";
-                }
+                    String actorName = lastName + ", " + firstName;
+                    findKevinBaconNumber(actorName);
+                    break;
 
+                case "x":
+                    System.out.println("Good bye!");
+                    run = false;
+                    break;
+
+                default:
+                    System.out.println("Incorrect command, please try again");
             }
-            System.out.println(creditMap.get("Coal"));
-        } catch (IOException e) {
-            e.printStackTrace();
+
         }
+    }
 
+    private String normalizeName(String name) {
+        if (!name.isEmpty()) {
+            name = name.trim();
+            //name = name.toLowerCase();
+            name = name.substring(0, 1).toUpperCase() + name.substring(1); //Stor bokstav i början av givet namn
+        }
+        return name;
+    }
 
+    private void findKevinBaconNumber(String actorName) {
+
+        if (graph.contains(actorName)) {
+            printBaconNumber(actorName, "Bacon, Kevin");
+        } else {
+            System.out.println("Did not find " + actorName);
+        }
+    }
+
+    private void findKevinBaconNumberBetweenTwo(String firstActorName, String secondActorName) {
+        if (!graph.contains(firstActorName)) {
+            System.out.println("Did not find " + firstActorName + " in the actor list");
+        } else if (!graph.contains(secondActorName)) {
+            System.out.println("Did not find " + secondActorName + " in the actor list");
+        } else {
+            printBaconNumber(firstActorName, secondActorName);
+        }
+    }
+
+    private void printBaconNumber(String firstActorName, String secondActorName) {
+        int kevinBaconNumber = graph.breadthFirstSearch(firstActorName, secondActorName);
+        if (kevinBaconNumber == -1) { //Exempel är Macaroni, Anna
+            System.out.println("No link found between " + firstActorName + " and " + secondActorName + ", or search took too long");
+        } else { //Hatley, Carla. Lawrence, Vicki
+            System.out.println("Kevin Bacon-number for " + firstActorName + " to " + secondActorName + " is: " + kevinBaconNumber);
+        }
     }
 }
